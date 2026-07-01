@@ -40,6 +40,7 @@ AGENT_NAME                   Prompt agent name, default bootstrap-pages-agent
 MODEL_DEPLOYMENT_NAME        Foundry model deployment name, for example gpt-5-mini
 GITHUB_PAGES_ORIGIN          Pages origin, for example https://<owner>.github.io
 VITE_COPILOT_RUNTIME_URL     https://<function-app>.azurewebsites.net/api/copilotkit
+ENABLE_PAGES_DEPLOY          Set to true after enabling GitHub Pages
 ```
 
 Then run the workflows in this order:
@@ -47,9 +48,11 @@ Then run the workflows in this order:
 1. **Provision Azure runtime** creates the Function App and assigns its managed identity `Foundry User`.
 2. **Deploy Foundry prompt agent** creates a prompt-agent version from `agent/instructions.md`.
 3. **Deploy runtime API** deploys the Azure Functions CopilotKit runtime and sets app settings.
-4. **Deploy static site to GitHub Pages** publishes the Bootstrap frontend.
+4. In **Settings > Pages**, set **Build and deployment** to **GitHub Actions**.
+5. Set `ENABLE_PAGES_DEPLOY=true`.
+6. **Deploy static site to GitHub Pages** publishes the Bootstrap frontend.
 
-In **Settings > Pages**, set **Build and deployment** to **GitHub Actions**.
+The Pages workflow is guarded by `ENABLE_PAGES_DEPLOY` so a repository created from this template does not fail before Pages is enabled.
 
 ## Customize the agent
 

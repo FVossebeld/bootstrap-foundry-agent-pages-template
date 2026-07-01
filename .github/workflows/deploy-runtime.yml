@@ -1,11 +1,6 @@
 name: Deploy runtime API
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - api/**
-      - .github/workflows/deploy-runtime.yml
   workflow_dispatch:
 
 permissions:
