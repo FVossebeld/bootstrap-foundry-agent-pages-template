@@ -1,5 +1,7 @@
 dist
 node_modules
+.foundry
+.venv
 .env
 .env.local
 *.local

@@ -1,15 +1,14 @@
 import { CopilotKit, CopilotPopup } from "@copilotkit/react-core/v2";
-import { HttpAgent } from "@ag-ui/client";
 
-const agentUrl = import.meta.env.VITE_AGENT_URL;
-const agent = agentUrl ? new HttpAgent({ url: agentUrl }) : null;
+const runtimeUrl = import.meta.env.VITE_COPILOT_RUNTIME_URL;
 
 function SetupNotice() {
   return (
     <div className="alert alert-warning mt-4" role="alert">
-      <strong>Set VITE_AGENT_URL first.</strong> Copy <code>.env.example</code> to{" "}
-      <code>.env.local</code>, point it at your hosted AG-UI agent, then restart
-      the dev server.
+      <strong>Set VITE_COPILOT_RUNTIME_URL first.</strong> Copy{" "}
+      <code>.env.example</code> to <code>.env.local</code>, point it at the
+      Copilot Runtime endpoint that calls your Foundry prompt agent, then
+      restart the dev server.
     </div>
   );
 }
@@ -23,12 +22,11 @@ function Page() {
             <div className="col-lg-7">
               <span className="badge text-bg-light mb-3">GitHub Pages template</span>
               <h1 className="display-4 fw-bold text-white">
-                A tiny Bootstrap site with a hosted agent built in.
+                A tiny Bootstrap site for a Foundry prompt agent.
               </h1>
               <p className="lead text-white-50 mt-3">
-                Copy this template, set one environment variable, and deploy a static
-                page that talks to your AG-UI-compatible hosted agent through
-                CopilotKit.
+                Copy this template, deploy the prompt agent to Microsoft Foundry,
+                and point this static page at a small Copilot Runtime API.
               </p>
               <div className="d-flex flex-wrap gap-2 mt-4">
                 <a className="btn btn-light btn-lg" href="#setup">
@@ -47,37 +45,37 @@ function Page() {
                     <li className="mb-2">Bootstrap 5 layout</li>
                     <li className="mb-2">Vite static build</li>
                     <li className="mb-2">CopilotKit popup</li>
-                    <li>GitHub Pages workflow</li>
+                    <li className="mb-2">GitHub Pages workflow</li>
+                    <li>Foundry prompt agent deploy scaffold</li>
                   </ul>
                 </div>
               </div>
             </div>
           </div>
-          {!agent && <SetupNotice />}
+          {!runtimeUrl && <SetupNotice />}
         </div>
       </section>
 
       <section className="container py-5" id="setup">
         <div className="row g-4">
           <div className="col-md-4">
-            <h2 className="h4">1. Configure</h2>
+            <h2 className="h4">1. Deploy agent</h2>
             <p>
-              Set <code>VITE_AGENT_URL</code> to the public URL of your hosted
-              AG-UI endpoint.
+              Use the included workflow or script to create a Foundry prompt
+              agent version from <code>agent/prompt-agent.json</code>.
             </p>
           </div>
           <div className="col-md-4">
-            <h2 className="h4">2. Build</h2>
+            <h2 className="h4">2. Connect runtime</h2>
             <p>
-              Run <code>npm run build</code>. Vite writes the static site to{" "}
-              <code>dist</code>.
+              Set <code>VITE_COPILOT_RUNTIME_URL</code> to the API that invokes
+              your prompt agent securely.
             </p>
           </div>
           <div className="col-md-4">
             <h2 className="h4">3. Deploy</h2>
             <p>
-              GitHub Pages serves <code>dist</code>. The agent stays hosted
-              somewhere else.
+              GitHub Pages serves <code>dist</code>. The agent runs in Foundry.
             </p>
           </div>
         </div>
@@ -85,10 +83,11 @@ function Page() {
 
       <section className="bg-body-tertiary py-5" id="agent">
         <div className="container">
-          <h2 className="h3">Hosted agent requirements</h2>
+          <h2 className="h3">Foundry prompt agent setup</h2>
           <p className="mb-0">
-            Your agent must speak AG-UI over HTTP and allow CORS from this Pages
-            origin. Keep secrets on the agent host, not in this static frontend.
+            The static site never stores Azure credentials. Keep Foundry access
+            in a backend Copilot Runtime, Azure Function, Container App, or
+            equivalent API.
           </p>
         </div>
       </section>
@@ -97,17 +96,17 @@ function Page() {
 }
 
 export default function App() {
-  if (!agent) {
+  if (!runtimeUrl) {
     return <Page />;
   }
 
   return (
-    <CopilotKit agent="hosted-agent" selfManagedAgents={{ "hosted-agent": agent }}>
+    <CopilotKit runtimeUrl={runtimeUrl}>
       <Page />
       <CopilotPopup
         labels={{
-          modalHeaderTitle: "Hosted agent",
-          welcomeMessageText: "Hi. Ask me about this site or try your hosted agent.",
+          modalHeaderTitle: "Foundry agent",
+          welcomeMessageText: "Hi. Ask me about this site or try your Foundry agent.",
         }}
       />
     </CopilotKit>

@@ -1,0 +1,5 @@
+{
+  "name": "bootstrap-pages-agent",
+  "model": "gpt-5-mini",
+  "instructionsFile": "instructions.md"
+}

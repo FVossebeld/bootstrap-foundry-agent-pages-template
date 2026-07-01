@@ -1,0 +1,46 @@
+name: Deploy Foundry prompt agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_endpoint:
+        description: Foundry project endpoint, for example https://resource.services.ai.azure.com/api/projects/project
+        required: false
+      agent_name:
+        description: Prompt agent name
+        required: false
+      model_deployment:
+        description: Foundry model deployment name
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID || vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID || vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID || vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install agent deploy dependencies
+        run: pip install -r agent/requirements.txt
+
+      - name: Deploy prompt agent
+        env:
+          PROJECT_ENDPOINT: ${{ inputs.project_endpoint || vars.PROJECT_ENDPOINT }}
+          AGENT_NAME: ${{ inputs.agent_name || vars.AGENT_NAME }}
+          MODEL_DEPLOYMENT_NAME: ${{ inputs.model_deployment || vars.MODEL_DEPLOYMENT_NAME }}
+        run: python agent/deploy_prompt_agent.py
