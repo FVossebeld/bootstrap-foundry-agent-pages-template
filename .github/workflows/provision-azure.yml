@@ -1,0 +1,59 @@
+name: Provision Azure runtime
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID || vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID || vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID || vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Function App runtime
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            set -euo pipefail
+
+            az group create \
+              --name "${{ vars.AZURE_RESOURCE_GROUP }}" \
+              --location "${{ vars.AZURE_LOCATION }}"
+
+            az storage account create \
+              --name "${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" \
+              --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+              --location "${{ vars.AZURE_LOCATION }}" \
+              --sku Standard_LRS \
+              --https-only true
+
+            az functionapp create \
+              --name "${{ vars.AZURE_FUNCTIONAPP_NAME }}" \
+              --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+              --storage-account "${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}" \
+              --consumption-plan-location "${{ vars.AZURE_LOCATION }}" \
+              --functions-version 4 \
+              --runtime node \
+              --runtime-version 22
+
+            principal_id=$(az functionapp identity assign \
+              --name "${{ vars.AZURE_FUNCTIONAPP_NAME }}" \
+              --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+              --query principalId \
+              --output tsv)
+
+            az role assignment create \
+              --assignee-object-id "$principal_id" \
+              --assignee-principal-type ServicePrincipal \
+              --role "Foundry User" \
+              --scope "${{ vars.AZURE_AI_ACCOUNT_RESOURCE_ID }}"
+
+            echo "Runtime URL: https://${{ vars.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/copilotkit"

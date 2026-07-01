@@ -1,0 +1,57 @@
+name: Deploy runtime API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - api/**
+      - .github/workflows/deploy-runtime.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID || vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID || vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID || vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+
+      - name: Install and build runtime
+        working-directory: api
+        run: |
+          npm ci
+          npm run build
+
+      - name: Configure runtime app settings
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az functionapp config appsettings set \
+              --name "${{ vars.AZURE_FUNCTIONAPP_NAME }}" \
+              --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+              --settings \
+                PROJECT_ENDPOINT="${{ vars.PROJECT_ENDPOINT }}" \
+                AGENT_NAME="${{ vars.AGENT_NAME }}" \
+                ALLOWED_ORIGIN="${{ vars.GITHUB_PAGES_ORIGIN }}" \
+                AzureWebJobsFeatureFlags="EnableWorkerIndexing"
+
+      - name: Deploy runtime to Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
+          package: api

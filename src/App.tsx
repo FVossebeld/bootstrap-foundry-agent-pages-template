@@ -25,8 +25,8 @@ function Page() {
                 A tiny Bootstrap site for a Foundry prompt agent.
               </h1>
               <p className="lead text-white-50 mt-3">
-                Copy this template, deploy the prompt agent to Microsoft Foundry,
-                and point this static page at a small Copilot Runtime API.
+                Copy this template, deploy the prompt agent and runtime API, then
+                publish a static page that your users can chat with.
               </p>
               <div className="d-flex flex-wrap gap-2 mt-4">
                 <a className="btn btn-light btn-lg" href="#setup">
@@ -46,7 +46,7 @@ function Page() {
                     <li className="mb-2">Vite static build</li>
                     <li className="mb-2">CopilotKit popup</li>
                     <li className="mb-2">GitHub Pages workflow</li>
-                    <li>Foundry prompt agent deploy scaffold</li>
+                    <li>Foundry prompt agent and runtime API</li>
                   </ul>
                 </div>
               </div>
@@ -61,21 +61,22 @@ function Page() {
           <div className="col-md-4">
             <h2 className="h4">1. Deploy agent</h2>
             <p>
-              Use the included workflow or script to create a Foundry prompt
-              agent version from <code>agent/prompt-agent.json</code>.
+              Use the included workflow to create a Foundry prompt agent version
+              from <code>agent/prompt-agent.json</code>.
             </p>
           </div>
           <div className="col-md-4">
             <h2 className="h4">2. Connect runtime</h2>
             <p>
-              Set <code>VITE_COPILOT_RUNTIME_URL</code> to the API that invokes
-              your prompt agent securely.
+              Deploy the included Azure Functions runtime. It invokes your
+              prompt agent securely with server-side identity.
             </p>
           </div>
           <div className="col-md-4">
             <h2 className="h4">3. Deploy</h2>
             <p>
-              GitHub Pages serves <code>dist</code>. The agent runs in Foundry.
+              GitHub Pages serves <code>dist</code>. Users chat with the
+              Copilot popup.
             </p>
           </div>
         </div>
@@ -85,9 +86,8 @@ function Page() {
         <div className="container">
           <h2 className="h3">Foundry prompt agent setup</h2>
           <p className="mb-0">
-            The static site never stores Azure credentials. Keep Foundry access
-            in a backend Copilot Runtime, Azure Function, Container App, or
-            equivalent API.
+            The static site never stores Azure credentials. The included Azure
+            Functions API uses server-side identity to call Foundry.
           </p>
         </div>
       </section>

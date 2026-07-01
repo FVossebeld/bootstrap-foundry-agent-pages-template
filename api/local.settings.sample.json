@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "PROJECT_ENDPOINT": "https://<resource>.services.ai.azure.com/api/projects/<project>",
+    "AGENT_NAME": "bootstrap-pages-agent",
+    "ALLOWED_ORIGIN": "http://localhost:5173",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing"
+  }
+}
