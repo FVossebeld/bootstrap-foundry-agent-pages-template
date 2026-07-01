@@ -1,0 +1,17 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-width: 320px;
+}
+
+.hero {
+  background:
+    radial-gradient(circle at top right, rgba(13, 110, 253, 0.45), transparent 32rem),
+    linear-gradient(135deg, #111827 0%, #1d4ed8 100%);
+}
+
+code {
+  white-space: nowrap;
+}
