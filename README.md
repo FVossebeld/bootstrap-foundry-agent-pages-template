@@ -9,6 +9,7 @@ It includes:
 - a Microsoft Foundry prompt-agent definition,
 - an Azure Functions runtime API that invokes the prompt agent securely,
 - GitHub Actions workflows to provision Azure, deploy the agent, deploy the runtime, and deploy Pages.
+- GitHub Copilot instructions, a setup skill, and a reusable prompt for fast initialization.
 
 ## Architecture
 
@@ -53,6 +54,24 @@ Then run the workflows in this order:
 6. **Deploy static site to GitHub Pages** publishes the Bootstrap frontend.
 
 The Pages workflow is guarded by `ENABLE_PAGES_DEPLOY` so a repository created from this template does not fail before Pages is enabled.
+
+## Use GitHub Copilot to initialize it
+
+This template includes Copilot helper files:
+
+| File | Purpose |
+| --- | --- |
+| `.github/copilot-instructions.md` | Repository-wide Copilot guidance and guardrails |
+| `.github/skills/bootstrap-foundry-pages/SKILL.md` | Setup workflow skill for initializing and deploying this template |
+| `.github/prompts/initialize-template.prompt.md` | Reusable prompt to drive template initialization |
+
+In Copilot Chat, use the prompt file or ask:
+
+```text
+Use the bootstrap-foundry-pages skill and initialize this template for my agent demo.
+```
+
+Copilot should collect missing values, customize `agent/instructions.md`, update `agent/prompt-agent.json`, and guide you through the workflows in the correct order.
 
 ## Customize the agent
 
@@ -143,6 +162,9 @@ src/                         GitHub Pages frontend
 api/                         Azure Functions CopilotKit runtime
 agent/                       Foundry prompt-agent definition and deploy script
 .github/workflows/           Provisioning and deployment workflows
+.github/skills/              Copilot skill for template initialization
+.github/prompts/             Reusable Copilot prompt files
+.github/copilot-instructions.md Repository-wide Copilot instructions
 .env.example                 Frontend local configuration
 ```
 
